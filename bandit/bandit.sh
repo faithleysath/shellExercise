@@ -65,6 +65,18 @@ bandit() {
 			;;
 		connect)
 			sshpass -p "$3" ssh -o StrictHostKeyChecking=no bandit$2@bandit.labs.overthewire.org -p 2220 $4
+			sshcode=$?
+			if [[ $sshcode -eq 0 ]]; then
+				return 0
+			fi
+			if [[ $sshcode -eq 5 ]]; then
+				echo "密码错误！"
+				return $sshcode
+			else
+				echo "ssh连接失败，错误码：$sshcode"
+				echo "尝试重连中......"
+				bandit connect $2 "$3" "$4"
+			fi
 			;;
 		play)
 			bandit connect $2 "$(bandit get $2)" 
