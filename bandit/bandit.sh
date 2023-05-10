@@ -5,7 +5,7 @@ bandit() {
 		while true
 		do
 			echo "目前已通关卡：$(bandit show)"
-			num=$(tail -n1 ./passwd | cut -c 7)
+			num=$(tail -n1 ./passwd | cut -d " " -f 1 | cut -d t -f 2)
 
 			echo "最新关卡为第${num}关，连接中....."
 			bandit play $num 
@@ -20,7 +20,7 @@ bandit() {
 	fi
 	case $1 in
 		update)
-			sort -u ./passwd -o ./passwd # 排序去重
+			sort -n -t t -k 2 -u ./passwd -o ./passwd # 排序去重
 			cat ./passwd | tr -s '\n' | tee ./passwd &> /dev/null # 去除空行
 			;;
 		show)
@@ -28,7 +28,7 @@ bandit() {
 				echo "bandit0 bandit0" > ./passwd
 			fi
 			bandit update
-			echo $(cat ./passwd | cut -c 7)
+			echo $(cat ./passwd | cut -d " " -f 1 | cut -d t -f 2)
 			;;
 		del)
 			sed -i "/bandit$2/d" ./passwd
